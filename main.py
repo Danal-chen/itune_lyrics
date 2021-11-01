@@ -1,6 +1,5 @@
 import win32com.client
 import time
-import os
 from qqmusic import *
 from lrc import *
 from tkmusic import *
