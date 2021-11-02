@@ -21,28 +21,32 @@ def get_track(track):
         return track
     except:
         update_label("沒有播放音樂")
-        return {'position':0, 'track_artist':"", 'track_name':"no_lyric", 'lyrics':"no_lyric"}
+        return track
 
-def main():
-    track_dict = get_track( {'position':0, 'track_artist':"", 'track_name':"", 'lyrics':""} )
-    while(track_dict['track_name'] != "no_lyric"):
-        track_dict = get_track(track_dict) or track_dict
-        time.sleep(0.5)
-        for index,(lyrics_time,lyrics) in enumerate(track_dict['lyrics']):
-            if(index+1 < len(track_dict['lyrics'])):
-                nxt_lyric = track_dict['lyrics'][index+1]
-            else:
-                break
-            if(nxt_lyric[0] > track_dict['position']):
-                try:
-                    lyrics_tk_used = get_label_value()
-                    lyrics_tk = f'{lyrics}\n{nxt_lyric[1]}'
-                    if(lyrics_tk != lyrics_tk_used):
-                        update_label(lyrics_tk)
-                        lyrics_tk_used = lyrics_tk
+def main(): 
+    while(True):
+        track_dict = get_track( {'position':0, 'track_artist':"", 'track_name':"", 'lyrics':""} )
+        if(not track_dict['lyrics']):
+            update_label("")
+        while(track_dict['lyrics']):
+            track_dict = get_track(track_dict) or track_dict
+            time.sleep(0.5)
+            for index,(lyrics_time,lyrics) in enumerate(track_dict['lyrics']):
+                if(index+1 < len(track_dict['lyrics'])):
+                    nxt_lyric = track_dict['lyrics'][index+1]
+                else:
                     break
-                except:
-                    break
+                if(nxt_lyric[0] > track_dict['position']):
+                    try:
+                        lyrics_tk_used = get_label_value()
+                        lyrics_tk = f'{lyrics}\n{nxt_lyric[1]}'
+                        if(lyrics_tk != lyrics_tk_used):
+                            update_label(lyrics_tk)
+                            lyrics_tk_used = lyrics_tk
+                        break
+                    except:
+                        break         
+        
 
 if __name__ == "__main__":
     window.after(1,main)

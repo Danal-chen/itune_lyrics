@@ -34,6 +34,7 @@ def update_label(txt):
     text.set(txt)
     label.update_idletasks()
     label.update()
+    window.update()
 
 def set_clickthrough():
     hwnd = win32gui.FindWindow(None, "tk") # Getting window handle
