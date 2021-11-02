@@ -7,43 +7,43 @@ from tkmusic import *
 itunes = win32com.client.gencache.EnsureDispatch("iTunes.Application")
 
 mainLibrary = itunes.LibraryPlaylist
-Track = win32com.client.CastTo(itunes.CurrentTrack, 'IITTrack')
-track_converted = win32com.client.CastTo(Track, "IITFileOrCDTrack")
 
-track_artist = Track.Artist
-track_name = Track.Name
-
-lyrics_incode = search_lyric_main(track_name, track_artist)
-lyrics_decode = decode_lrc(lyrics_incode)
-
-lyrics = convert_lrc(lyrics_decode)
-
+def get_track(track):
+    try:
+        Track = win32com.client.CastTo(itunes.CurrentTrack, 'IITTrack')
+        track['position'] = itunes.PlayerPosition
+        if(track['track_name'] != Track.Name):
+            track['track_artist'] = Track.Artist
+            track['track_name'] = Track.Name
+            lyrics_incode = search_lyric_main(track['track_name'], track['track_artist'])
+            lyrics_decode = decode_lrc(lyrics_incode)
+            track['lyrics'] = convert_lrc(lyrics_decode)
+        return track
+    except:
+        update_label("沒有播放音樂")
+        return {'position':0, 'track_artist':"", 'track_name':"no_lyric", 'lyrics':"no_lyric"}
 
 def main():
-    global track_name,track_artist,lyrics
-    lyrics_tk_tmp = ""
-    while(True):
-        Track = win32com.client.CastTo(itunes.CurrentTrack, 'IITTrack')
-        if(track_name != Track.Name):
-            track_name = Track.Name
-            track_artist = Track.Artist
-            lyrics_incode = search_lyric_main(track_name, track_artist)
-            lyrics_decode = decode_lrc(lyrics_incode)
-            lyrics = convert_lrc(lyrics_decode)
-            if(lyrics_incode == ""):
-                update_label("")
+    track_dict = get_track( {'position':0, 'track_artist':"", 'track_name':"", 'lyrics':""} )
+    while(track_dict['track_name'] != "no_lyric"):
+        track_dict = get_track(track_dict) or track_dict
         time.sleep(0.5)
-        position = itunes.PlayerPosition
-        for i in range(len(lyrics)-1):
-            if(lyrics[i+1][0] > position):
+        for index,(lyrics_time,lyrics) in enumerate(track_dict['lyrics']):
+            if(index+1 < len(track_dict['lyrics'])):
+                nxt_lyric = track_dict['lyrics'][index+1]
+            else:
+                break
+            if(nxt_lyric[0] > track_dict['position']):
                 try:
-                    lyrics_tk = f'{lyrics[i][1]}\n{lyrics[i+1][1]}'
-                    if(lyrics_tk != lyrics_tk_tmp):
+                    lyrics_tk_used = get_label_value()
+                    lyrics_tk = f'{lyrics}\n{nxt_lyric[1]}'
+                    if(lyrics_tk != lyrics_tk_used):
                         update_label(lyrics_tk)
-                        lyrics_tk_tmp = lyrics_tk
+                        lyrics_tk_used = lyrics_tk
                     break
                 except:
                     break
 
-window.after(1,main)
-window.mainloop()
+if __name__ == "__main__":
+    window.after(1,main)
+    window.mainloop()

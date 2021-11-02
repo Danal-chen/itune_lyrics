@@ -40,7 +40,10 @@ def set_clickthrough():
     # hwnd = root.GetHandle() getting hwnd with wx windows
     extendedStyleSettings = win32gui.GetWindowLong(hwnd, win32con.GWL_EXSTYLE)
     win32gui.SetWindowLong(hwnd, win32con.GWL_EXSTYLE, extendedStyleSettings  | win32con.WS_EX_LAYERED | win32con.WS_EX_TRANSPARENT)
-    win32gui.SetLayeredWindowAttributes(hwnd, 1, 100, win32con.LWA_ALPHA)
+    win32gui.SetLayeredWindowAttributes(hwnd, 1, 150, win32con.LWA_ALPHA)
+
+def get_label_value():
+    label.cget("text")
 
 label.pack()
 center_window()

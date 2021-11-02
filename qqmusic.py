@@ -1,17 +1,21 @@
 from QQMusicAPI import QQMusic
-
 import sys,os
+
+def resource_path():
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS)
+    return os.path.join(os.path.abspath("."))
 
 def write_lyric(SongName,SingerName,lyric):
     filename = SongName + '_' + SingerName + '.lrc'
-    pathname = os.path.join(os.path.dirname(os.path.realpath(__file__)), "lyrics", filename)
+    pathname = os.path.join("lyrics", filename)
     f = open(pathname, "w",encoding='utf-8')
     f.write(lyric)
     f.close()
 
 def search_lyric_file(SongName,SingerName):
     filename = SongName + '_' + SingerName + '.lrc'
-    pathname = os.path.join(os.path.dirname(os.path.realpath(__file__)), "lyrics", filename)
+    pathname = os.path.join("lyrics", filename)
     try:
         f = open(pathname, "r",encoding='utf-8')
         lyric = f.read()
